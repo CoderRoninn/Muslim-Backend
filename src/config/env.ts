@@ -4,4 +4,5 @@ import 'dotenv/config';
 export const env = {
   port: Number(process.env.PORT),
   googleClientId: process.env.GOOGLE_CLIENT_ID,
+  jwtSecret: process.env.JWT_SECRET,
 };
