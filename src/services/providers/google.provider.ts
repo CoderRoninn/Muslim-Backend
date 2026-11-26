@@ -1,5 +1,6 @@
-import { OAuth2Client } from 'google-auth-library';
+import { LoginTicket, OAuth2Client } from 'google-auth-library';
 import { env } from '../../config/env';
+import { AppError } from '../../errors/AppError';
 
 // Checks Google tokens, created once and reused
 const googleClient = new OAuth2Client();
@@ -11,16 +12,23 @@ export const verifyGoogleToken = async (idToken: string) => {
     throw new Error('GOOGLE_CLIENT_ID is not set');
   }
 
-  // Throws an error when the token is invalid or made for another app
-  const ticket = await googleClient.verifyIdToken({
-    idToken,
-    audience: env.googleClientId,
-  });
+  // Declared here so it can be used after the try block
+  let ticket: LoginTicket;
+
+  // The library throws its own error, so we turn it into ours
+  try {
+    ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: env.googleClientId,
+    });
+  } catch {
+    throw new AppError('Invalid Google token', 401);
+  }
 
   const payload = ticket.getPayload();
 
   if (!payload) {
-    throw new Error('Google token has no payload');
+    throw new AppError('Invalid Google token', 401);
   }
 
   // Only the data we need from the token
