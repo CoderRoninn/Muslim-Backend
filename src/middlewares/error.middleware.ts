@@ -14,7 +14,7 @@ export const errorMiddleware: ErrorRequestHandler = (
     return;
   }
 
-  // Unknown errors are only logged, the user gets a general message
+  // Unknown errors are only logged and the user gets a general message
   console.error(error);
   response.status(500).json({ message: 'Something went wrong' });
 };
