@@ -21,5 +21,4 @@ export const loginWithGoogle = async (idToken: string) => {
       name: googleUser.name,
     },
   };
-  
 };
