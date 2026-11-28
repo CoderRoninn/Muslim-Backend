@@ -14,6 +14,18 @@ export const errorMiddleware: ErrorRequestHandler = (
     return;
   }
 
+  // Broken JSON from the client is a client mistake so 400
+  if (error.type === 'entity.parse.failed') {
+    response.status(400).json({ message: 'Invalid JSON body' });
+    return;
+  }
+
+  // A body bigger than the limit is also a client mistake so 413
+  if (error.type === 'entity.too.large') {
+    response.status(413).json({ message: 'Request body too large' });
+    return;
+  }
+
   // Unknown errors are only logged and the user gets a general message
   console.error(error);
   response.status(500).json({ message: 'Something went wrong' });
